@@ -1,0 +1,14 @@
+<form id="add-todo" action="{{ url_for('todo.add_todo') }}" method="post">
+	{{ form.csrf_token }}
+	{{ form.todo.label }}
+	{{ form.todo }}
+
+<!--	<input type="text" class="form-control form-control-lg"-->
+<!--		   id="todo" name="todo"-->
+<!--		   placeholder="Add new todo">-->
+<!--	<a href="#!" data-mdb-toggle="tooltip" title="Set due date"><i-->
+<!--			class="fas fa-calendar-alt fa-lg me-3"></i></a>-->
+	<div>
+		<button type="submit" class="btn btn-primary">Add todo</button>
+	</div>
+</form>
