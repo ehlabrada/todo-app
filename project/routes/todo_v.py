@@ -15,30 +15,35 @@ def home():
 
 @todo.route("/add-todo", methods=['POST', 'GET'])
 def add_todo():
-    add_todo_form = AddTodoForm()
-
     if request.method == "POST":
-        todo = add_todo_form.todo.data
+        data = request.get_json()
+        todo = data["todoInput"]
+
         new_todo = Todo(
             todo=todo
         )
 
         db.session.add(new_todo)
         db.session.commit()
-        return redirect(url_for('todo.home'))
+
+        return jsonify({"message": "added successfully",
+                        "todo": {"id": new_todo.id,
+                                 "todo": new_todo.todo,
+                                 "created": new_todo.due_date.strftime("%m-%d-%Y")}})
+
     return render_template("index.html")
 
 
-@todo.route("/delete/<int:id>", methods=["DELETE", "GET"])
+@todo.route("/delete/<int:id>", methods=["DELETE"])
 def delete(id):
     todo = db.session.execute(db.select(Todo).where(Todo.id == id)).scalar()
-    print(todo)
+
     if todo:
-        print("here")
         db.session.delete(todo)
         db.session.commit()
-        return redirect(url_for('todo.home'))
-    return redirect(url_for('todo.home'))
+        return jsonify({"message": "Element deleted successfully"})
+
+    return jsonify({"message": "Element could not been found."})
 
 
 

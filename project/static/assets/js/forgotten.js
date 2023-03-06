@@ -1,125 +1,72 @@
 	function addTodoToDOM(todo) {
-  // Create a new li element for the todo
-  const li = document.createElement("li");
-  li.className = "list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent";
+        console.log("Add todo to DOM called", todo)
+        var mainContainer = document.querySelector("#main-todo-container");
+        var newTodoNode = `<ul data-id='${todo.id}' id="todos-list-${todo.id}"
+								class="list-group list-group-horizontal rounded-0 bg-transparent">
+								<li
+										class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
+									<div class="form-check">
+										<input  class="form-check-input me-0" type="checkbox" value=""
+											   id="todo_checkbox"
+											   aria-label="..."/>
+									</div>
+								</li>
+								<li
+										class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent">
+									<p class="lead fw-normal mb-0">${todo.todo}</p>
+								</li>
+								<li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
+									<div class="d-flex flex-row justify-content-end mb-1">
+										<a href="#!" class="text-info" data-mdb-toggle="tooltip" title="Edit todo"><i
+												class="fas fa-pencil-alt me-3"></i></a>
+										<a type="button" href="" class="text-danger delete-btn"
+										   data-mdb-toggle="tooltip"
+										   title="Delete todo"><i
+												class="fas fa-trash-alt"></i></a>
 
-  // Create the checkbox input
-  const input = document.createElement("input");
-  input.className = "form-check-input me-0";
-  input.type = "checkbox";
-  input.value = "";
-  input.id = `checkbox-${todo.id}`;
-  input.setAttribute("aria-label", "...");
-  input.checked = todo.completed;
+									</div>
+									<div class="text-end text-muted">
+										<a href="#!" class="text-muted" data-mdb-toggle="tooltip" title="Created date">
+											<p class="small mb-0"><i class="fas fa-info-circle me-2"></i>
+												${todo.created}
+											</p>
+										</a>
+									</div>
+								</li>
+							</ul>`
 
-  // Create the label for the todo
-  const label = document.createElement("label");
-  label.className = "form-check-label ms-2 mb-0";
-  label.setAttribute("for", `checkbox-${todo.id}`);
-  label.innerText = todo.description;
-
-  // Add the checkbox and label to the li element
-  li.appendChild(input);
-  li.appendChild(label);
-
-  // Create the edit and delete buttons
-  const div = document.createElement("div");
-  div.className = "d-flex flex-row justify-content-end mb-1";
-
-  const editButton = document.createElement("a");
-  editButton.href = "#!";
-  editButton.className = "text-info me-3";
-  editButton.setAttribute("data-mdb-toggle", "tooltip");
-  editButton.title = "Edit todo";
-  editButton.innerHTML = '<i class="fas fa-pencil-alt"></i>';
-
-  const deleteButton = document.createElement("button");
-  deleteButton.type = "button";
-  deleteButton.className = "text-danger delete-btn";
-  deleteButton.setAttribute("data-mdb-toggle", "tooltip");
-  deleteButton.title = "Delete todo";
-  deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
-
-  // Add the edit and delete buttons to the div element
-  div.appendChild(editButton);
-  div.appendChild(deleteButton);
-
-  // Create the created date element
-  const dateElem = document.createElement("p");
-  dateElem.className = "small mb-0";
-  dateElem.innerHTML = `<i class="fas fa-info-circle me-2"></i>${todo.created_date}`;
-
-  // Create the created date link
-  const dateLink = document.createElement("a");
-  dateLink.href = "#!";
-  dateLink.className = "text-muted";
-  dateLink.setAttribute("data-mdb-toggle", "tooltip");
-  dateLink.title = "Created date";
-  dateLink.appendChild(dateElem);
-
-  // Create the date container
-  const dateContainer = document.createElement("div");
-  dateContainer.className = "text-end text-muted";
-  dateContainer.appendChild(dateLink);
-
-  // Add the div and date container to the li element
-  li.appendChild(div);
-  li.appendChild(dateContainer);
-
-  // Get the ul element for the todo list
-  const ul = document.getElementById("todo-list");
-
-  // Append the new todo li element to the ul
-  ul.appendChild(li);
+		mainContainer.insertAdjacentHTML("beforeend", newTodoNode);
 }
 
 
-	function allTodos() {
-	  fetch('{{ url_for('todo.add_todo') }}')
-		.then(response => response.json())
-		.then(data => {
-		console.log("data", data)
-		  const todosList = document.getElementById('main-todo-container');
-		  //todosList.innerHTML = '';
-
-		  data.todos.forEach(todo => {
-		  	// UL Element
-			var ul = document.createElement('ul');
-			ul.className= "list-group list-group-horizontal rounded-0 bg-transparent"
-
-			// LIST Elements
-			var li = document.createElement('li');
-			li.textContent = todo.todo;
-			todosList.appendChild(li);
-		  });
-		});
-}
-
+//    Add TODO
 	form = document.getElementById("add-todo");
 	form.addEventListener('submit', function(event) {
-    event.preventDefault();
-    var todoInput = form.elements['todo'].value.trim();
-    const data = { todoInput };
-    fetch('{{ url_for('todo.add_todo') }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
-    })
-    .then(function(response) {
-        return response.json() // extract JSON from the response
-    })
-    .then(function(data) {
-        allTodos();
-        console.log("CAled")
-    })
-    .catch(function(error) {
-    	console.log("GETTING SOME ERROR");
-        console.log(error);
-    });
+        event.preventDefault();
+        var todoInput = form.elements['todo'].value.trim();
+        console.log("TODO input", todoInput)
+        const data = { todoInput };
+
+        fetch("/add-todo", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        })
+        .then(function(response) {
+            return response.json() // extract JSON from the response
+        })
+        .then(function(data) {
+            console.log("Data", data)
+            addTodoToDOM(data.todo);
+        })
+        .catch(function(error) {
+            console.log("GETTING SOME ERROR");
+            console.log(error);
+        });
     // Clear the form input
-    todoInput.value = '';
+    form.elements['todo'].value = '';
 });
 
 
@@ -130,7 +77,8 @@
  // todo and send it the current object id
 	const deleteButtons = document.querySelectorAll('.delete-btn');
 	deleteButtons.forEach(button => {
-		button.addEventListener("click", () => {
+		button.addEventListener("click", (event) => {
+		    event.preventDefault();
 			const todoItem = button.closest('ul');
 			const my_id = parseInt(todoItem.getAttribute('data-id'));
 			console.log(my_id);
@@ -141,12 +89,11 @@
   				},
 			})
 			.then(response => {
-				console.log(response);
 				return response.json()
 			})
 			.then(function(data){
-				todoItem.remove()
-				console.log(data);
+				todoItem.remove()  //  Removes the current selected UL element from DOM, and also from DB because
+				                    // It sent the petition to the URL
 			})
 			.catch(error => {
 				console.error(error);
